@@ -20,15 +20,16 @@ header{
     align-items: center;
     justify-content: space-between;
     height: 80px;
-    padding: 0 2rem;
+    padding: 0 1rem;
     background-color: var(--mainColor);
     color: var(--textColor);
 }
 
 nav a{
-    margin: 0 1rem;
+    margin: 0 0.2rem;
     color: var(--textColor);
     text-decoration: none;
+    align-items: center;
 }
 
 nav a:hover{
