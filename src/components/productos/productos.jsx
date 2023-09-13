@@ -1,70 +1,24 @@
-import './productos.css'
-import IMAGEN from '../../img/IMAGEN.png'
+import "./productos.css";
+import { useContext } from "react";
+import { dataContext } from "../Context/DataContext";
 
-
-
-export default function Productos() {
-
+const Productos = () => {
+  const { data } = useContext(dataContext);
+  console.log(data);
+  return data.map((Productos) => {
     return (
-        <div className="containerProductos">
+      <div className="containerProductos">
+        <img
+          className="img-productos"
+          src={Productos.img}
+          alt="img-productos-card"
+        />
+        <p className="product-grid__name">{Productos.nombre}</p>
+        <p className="product-grid__price">${Productos.precio}</p>
+        <button>Comprar</button>
+      </div>
+    );
+  });
+};
 
-    
-            <div className="product-grid">
-                <div className="product-grid__item">
-                    <div className="product-grid__imagen">
-                        <img src={IMAGEN} alt=""/>
-                    </div>
-    
-                    <div class="product-grid__info">
-                        <p className="product-grid__name">Naranja</p>
-                        <p className="product-grid__price">$9.00 / kg</p>
-    
-                        <a href="#" className="product-grid__btn btn-default" data-btn-action="add-btn-cart" data-modal="#jsModalCarrito"  >Agregar al carrito</a>
-    
-                    </div>
-    
-                </div>
-    
-                <div className="product-grid__item">
-                    <div className="product-grid__imagen">
-                        <img src={IMAGEN} alt=""/>
-                    </div>
-    
-                    <div class="product-grid__info">
-                        <p className="product-grid__name">Manzana</p>
-                        <p className="product-grid__price">$5.00 / kg</p>
-                        <a href="#" className="product-grid__btn btn-default" data-btn-action="add-btn-cart" data-modal="#jsModalCarrito" >Agregar al carrito</a>
-                    </div>
-    
-                </div>
-    
-                <div className="product-grid__item">
-                    <div className="product-grid__imagen">
-                        <img src={IMAGEN} alt=""/>
-                    </div>
-    
-                    <div className="product-grid__info">
-                        <p className="product-grid__name">Limón</p>
-                        <p className="product-grid__price">$3.00 / kg</p>
-                        <a href="#" className="product-grid__btn btn-default" data-btn-action="add-btn-cart" data-modal="#jsModalCarrito">Agregar al carrito</a>
-                    </div>
-    
-                </div>
-    
-                <div className="product-grid__item">
-                    <div className="product-grid__imagen">
-                        <img src={IMAGEN} alt=""/>
-                    </div>
-    
-                    <div class="product-grid__info">
-                        <p className="product-grid__name">Platano</p>
-                        <p className="product-grid__price">$5.50 / kg</p>
-                        <a href="#" className="product-grid__btn btn-default" data-btn-action="add-btn-cart" data-modal="#jsModalCarrito">Agregar al carrito</a>
-                    </div>
-    
-                </div>
-    
-            </div>
-        </div>
-    )
-}
+export default Productos;

@@ -6,6 +6,9 @@ import NavBar from "./components/navbar/NavBar";
 import Slider from "./components/slider/slider.jsx";
 import Productos from "./components/productos/productos.jsx";
 import Carrito from "./components/carrito/carrito.jsx";
+import Cart from "./components/carrito/cart.jsx";
+import DataProvider from "./components/Context/DataContext";
+
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { useAuth0 } from "@auth0/auth0-react";
@@ -17,37 +20,41 @@ function App() {
 
   return (
     <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <NavBar></NavBar>
-                <Slider></Slider>
-                <Productos></Productos>
-              </>
-            }
-          />
-          <Route
-            path="/carrito"
-            element={
-              <>
-                <NavBar></NavBar>
-                <Carrito></Carrito>
-              </>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
+      <DataProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <NavBar></NavBar>
+                  <Slider></Slider>
+                  <div className="productos-card-container">
+                    <Productos></Productos>
+                  </div>
+                </>
+              }
+            />
+            <Route
+              path="/carrito"
+              element={
+                <>
+                  <NavBar></NavBar>
+                  <Carrito></Carrito>
+                </>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
 
-      {isAuthenticated ? (
-        <LogOutBoton></LogOutBoton>
-      ) : (
-        <LoginBoton></LoginBoton>
-      )}
+        {isAuthenticated ? (
+          <LogOutBoton></LogOutBoton>
+        ) : (
+          <LoginBoton></LoginBoton>
+        )}
 
-      <Perfil></Perfil>
+        <Perfil></Perfil>
+      </DataProvider>
     </div>
   );
 }

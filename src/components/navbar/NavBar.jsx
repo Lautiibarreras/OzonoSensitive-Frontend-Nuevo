@@ -11,7 +11,6 @@ function NavBar() {
   const showNavBar = () => {
     navRef.current.classList.toggle("responsive_nav");
   
-  const { loginWithRedirect } = useAuth0();
   };
 
   return (
@@ -26,7 +25,7 @@ function NavBar() {
           <Link to="/carrito">
               <span className="material-symbols-outlined">shopping_cart</span>
           </Link>
-            <button onClick={loginWithRedirect}>
+            <button>
               <span className="material-symbols-outlined">account_circle</span>
             </button>
 
