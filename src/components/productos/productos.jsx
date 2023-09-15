@@ -3,11 +3,15 @@ import { useContext } from "react";
 import { dataContext } from "../Context/DataContext";
 
 const Productos = () => {
-  const { data } = useContext(dataContext);
-  console.log(data);
+  const { data, cart, setCart} = useContext(dataContext);
+
+  const comprarProductos = (Productos) => {
+    setCart([...cart, Productos])
+
+  };
   return data.map((Productos) => {
     return (
-      <div className="containerProductos">
+      <div className="containerProductos" key={Productos.id}>
         <img
           className="img-productos"
           src={Productos.img}
@@ -15,7 +19,7 @@ const Productos = () => {
         />
         <p className="product-grid__name">{Productos.nombre}</p>
         <p className="product-grid__price">${Productos.precio}</p>
-        <button>Comprar</button>
+        <button onClick={()=> comprarProductos (Productos)}>Comprar</button>
       </div>
     );
   });

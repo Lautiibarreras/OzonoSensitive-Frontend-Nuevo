@@ -6,7 +6,6 @@ import NavBar from "./components/navbar/NavBar";
 import Slider from "./components/slider/slider.jsx";
 import Productos from "./components/productos/productos.jsx";
 import Carrito from "./components/carrito/carrito.jsx";
-import Cart from "./components/carrito/cart.jsx";
 import DataProvider from "./components/Context/DataContext";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -24,14 +23,11 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route
-              path="/"
+              path="/inicio"
               element={
                 <>
                   <NavBar></NavBar>
                   <Slider></Slider>
-                  <div className="productos-card-container">
-                    <Productos></Productos>
-                  </div>
                 </>
               }
             />
@@ -41,6 +37,17 @@ function App() {
                 <>
                   <NavBar></NavBar>
                   <Carrito></Carrito>
+                </>
+              }
+            />
+            <Route
+              path="/productos"
+              element={
+                <>
+                  <NavBar></NavBar>
+                  <div className="productos-card-container">
+                    <Productos></Productos>
+                  </div>
                 </>
               }
             />
