@@ -6,6 +6,23 @@
   --textColor: #eeeeee;
 }
 
+.carritoElementos{
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin: 30px;
+}
+
+.carrito > img {
+  height: 100px;
+  width: 100px;
+  text-align: center;
+}
+
+.carritoTotal{
+  text-align: center;
+}
+
 section {
   min-height: 100vh;
   vertical-align: middle;
