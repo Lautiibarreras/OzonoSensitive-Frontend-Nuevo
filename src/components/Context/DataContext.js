@@ -11,9 +11,19 @@ const DataProvider = ({ children }) => {
     axios("data.json").then((res) => setData(res.data));
   }, []);
 
-  return (
-    <dataContext.Provider value={{ data, cart, setCart }}>{children}</dataContext.Provider>
-  );
-};
+  const comprarProductos = (Productos) => {
+    const productotrepeat = cart.find((item) => item.id === Productos.id);
 
-export default DataProvider;
+    if (productotrepeat) {
+      setCart(cart.map((item) => (item.id === Productos.id ? { ...Productos, cantidad: productotrepeat.cantidad + 1 } : item)));
+    } else {
+      setCart([...cart, Productos]);
+    }
+  };
+
+    return (
+      <dataContext.Provider value={{ data, cart, setCart, comprarProductos }}>{children}</dataContext.Provider>
+    );
+  };
+
+  export default DataProvider;
