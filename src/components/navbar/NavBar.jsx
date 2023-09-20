@@ -30,9 +30,9 @@ function NavBar() {
         <Link to="/carrito">
           <span className="material-symbols-outlined">shopping_cart</span>
         </Link>
-        <button>
+        <a>
           <span className="material-symbols-outlined">account_circle</span>
-        </button>
+        </a>
 
         <button className="nav-btn nav-close-btn" onClick={showNavBar}>
           <img src={LogoMenu} alt="" />

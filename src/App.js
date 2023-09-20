@@ -23,7 +23,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route
-              path="/"
+              path="/inicio"
               element={
                 <>
                   <NavBar></NavBar>
