@@ -18,7 +18,7 @@ function NavBar() {
     <header>
       <img src={LogoSinNombreSinFondo} alt="Logo" className="LogoNav" />
       <nav ref={navRef}>
-        <Link to="/inicio">
+        <Link to="/">
           <a>Inicio</a>
         </Link>
         <Link to="/productos">
@@ -30,9 +30,9 @@ function NavBar() {
         <Link to="/carrito">
           <span className="material-symbols-outlined">shopping_cart</span>
         </Link>
-        <a>
+        <Link to="/formLogin">
           <span className="material-symbols-outlined">account_circle</span>
-        </a>
+        </Link>
 
         <button className="nav-btn nav-close-btn" onClick={showNavBar}>
           <img src={LogoMenu} alt="" />

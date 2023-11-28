@@ -1,4 +1,6 @@
 import "./App.css";
+import FormLogin from "./components/login/formLogin";
+import FormRegister from './components/register/formRegister';
 import LoginBoton from "./components/login/LoginBoton";
 import Perfil from "./components/perfil/Perfil";
 import LogOutBoton from "./components/logout/LogOutBoton";
@@ -23,7 +25,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route
-              path="/inicio"
+              path="/"
               element={
                 <>
                   <NavBar></NavBar>
@@ -48,6 +50,24 @@ function App() {
                   <div className="productos-card-container">
                     <Productos></Productos>
                   </div>
+                </>
+              }
+            />
+            <Route
+              path="/FormLogin"
+              element={
+                <>
+                  <NavBar></NavBar>
+                  <FormLogin></FormLogin>
+                </>
+              }
+            />
+            <Route
+              path="/FormRegister"
+              element={
+                <>
+                  <NavBar></NavBar>
+                  <FormRegister></FormRegister>
                 </>
               }
             />
