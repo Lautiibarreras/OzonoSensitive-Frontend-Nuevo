@@ -8,7 +8,17 @@ const DataProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
-    axios("data.json").then((res) => setData(res.data));
+    const fetchProductos = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/productos");
+
+        setData(response.data);
+      } catch (error) {
+        console.error("Error al obtener productos:", error);
+      }
+    };
+
+    fetchProductos();
   }, []);
 
   const comprarProductos = (Productos) => {

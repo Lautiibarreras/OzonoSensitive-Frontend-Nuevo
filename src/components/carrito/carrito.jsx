@@ -9,35 +9,28 @@ export default function Carrito() {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
+    // Calcular el total correctamente sumando los precios de los productos en el carrito
     const newTotal = cart.reduce(
-      (acc, el) => acc + el.details.precio * el.cantidad,
+      (acc, el) => acc + el.precio * el.cantidad,
       0
     );
     setTotal(newTotal);
   }, [cart]);
 
-  const eliminarProducto = (id) => {
-    const NuevoCarrito = cart.filter((elemento) => {
-      return elemento.id !== id;
-    });
-
-    setCart(NuevoCarrito);
-  };
-
   const handleCompra = async () => {
-    const productIds = cart.map((item) => item.id);
     const cartDetails = cart.map((item) => ({
       id: item.id,
       cantidad: item.cantidad,
     }));
 
+    const carritoFinal = JSON.stringify(cartDetails);
+
     try {
-      // Cambiar la URL de la siguiente línea según la ruta de tu backend
       await axios.post("http://localhost:8080/carrito", {
-        productIds,
-        cartDetails,
+        carritoFinal
       });
       alert("Articulos comprados con éxito");
+      setCart([]);
     } catch (err) {
       alert("Error al realizar la compra");
       console.log("Error al registrar carrito: ", err);
@@ -76,17 +69,15 @@ export default function Carrito() {
               </h5>
             </div>
             <div className="row">
-              <div className="col" style={{ paddingLeft: "0;" }}>
+              <div className="col" style={{ paddingLeft: "0" }}>
                 Total de los productos
               </div>
-              <div className="col text-right">
-                <CarritoTotal total={total} />
-              </div>
+              <div className="col text-right">${total}</div>
             </div>
             <form>
-              <p>ENVÍO</p>
+              <p>ENVIO</p>
               <select>
-                <option className="text-muted">Envío normal- $ 5.00</option>
+                <option className="text-muted">Envio normal- $ 5.00</option>
               </select>
             </form>
             <div
@@ -97,7 +88,7 @@ export default function Carrito() {
               }}
             >
               <div className="col">TOTAL</div>
-              <div className="col text-right"></div>
+              <div className="col text-right">${total}</div>
             </div>
             <button className="btn" onClick={handleCompra}>
               CONFIRMAR

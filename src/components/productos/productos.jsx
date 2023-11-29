@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { dataContext } from "../Context/DataContext";
 import "./productos.css";
+import axios from "axios";
 
 const Productos = () => {
   const { comprarProductos } = useContext(dataContext);
@@ -9,9 +10,9 @@ const Productos = () => {
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        const response = await fetch("http://localhost:8080/productos");
-        const data = await response.json();
-        setProductos(data);
+        const response = await axios.get("http://localhost:8080/productos");
+
+        setProductos(response.data);
       } catch (error) {
         console.error("Error al obtener productos:", error);
       }
