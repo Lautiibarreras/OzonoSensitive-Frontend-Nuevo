@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
 
 :root {
-  --primary-bg-color: #1abc9c;
-  --accent-color: #16a085;
-  --button-hover-color: #12876f;
+  --primary-bg-color: #053B50;
+  --accent-color: #176B87;
+  --button-hover-color: #64CCC5;
   --text-color: #fff;
   --border-color: lightgrey;
 }

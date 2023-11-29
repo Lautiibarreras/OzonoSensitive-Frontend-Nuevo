@@ -2,6 +2,7 @@
 
 :root{
     --backgroundColorWhite: #EEEEEE;
+    --backgroundColorGray: #ccc9c9;
     --mainColor: #053B50;
     --mainColorLight: #64CCC5;
     --secondaryColor: #176B87;
@@ -13,16 +14,21 @@
 .productos-card-container{
     display: flex;
     justify-content: space-between;
+    padding-top: 150px;
     flex-wrap: wrap;
-    margin: 50px;
     text-align: center;
     font-family: 'Montserrat', sans-serif;
 }
 
 .containerProductos{
-    margin: 50px;
+    margin: 15px;
+    border-radius: 5px;
+    background-color: var(--backgroundColorGray);
 }
 
+.pruductos{
+    display: flex;
+}
 
 .containerProductos button{
     border:none;
@@ -34,9 +40,14 @@
     cursor: pointer;
     width: 100%;
     font-size: 15px;
+    border-radius: 5px;
 }
 .containerProductos button:hover{
     opacity: 0.7;
     background-color: var(--secondaryColor);
+}
+
+.img-productos{
+    width: 100%;
 }
 

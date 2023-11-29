@@ -1,0 +1,290 @@
+
+carrito.jsx:
+
+import "./carrito.css";
+import CarritoElementos from "./CarritoElementos";
+import CarritoTotal from "./CarritoTotal";
+import "./carrito.css";
+
+
+export default function Carrito() {
+  return (
+    <section>
+      <div className="card">
+        <div className="row">
+          <div className="col-md-8 cart">
+            <div className="title">
+              <div className="row">
+                <div className="col">
+                  <h4>
+                    <b>Carrito</b>
+                  </h4>
+                </div>
+                <div className="col align-self-center text-right text-muted">
+                  Productos
+                </div>
+              </div>
+            </div>
+            <CarritoElementos />
+            <div className="back-to-shop">
+              <a href="#" style={{ textDecoration: "none" }}>
+                ←
+              </a>
+              <span className="text-muted">Volver</span>
+            </div>
+          </div>
+          <div className="col-md-4 summary">
+            <div>
+              <h5>
+                <b>Resumen</b>
+              </h5>
+            </div>
+            <div className="row">
+              <div className="col" style={{ "padding-left": "0;" }}>
+                Total de los productos
+              </div>
+              <div className="col text-right"><CarritoTotal /></div>
+            </div>
+            <form>
+              <p>ENVIO</p>
+              <select>
+                <option className="text-muted">Envio normal- $ 5.00</option>
+              </select>
+            </form>
+            <div
+              className="row"
+              style={{
+                "border-top": "1px solid rgba(0,0,0,.1);",
+                padding: "2vh 0;",
+              }}
+            >
+              <div className="col">TOTAL</div>
+              <div className="col text-right"></div>
+            </div>
+            <button className="btn">CONFIRMAR</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+CarritoElementos.jsx:
+
+import { useContext } from "react";
+import { dataContext } from "../Context/DataContext";
+import React from "react";
+import "./carrito.css";
+import CarritoContador from "./CarritoContador";
+
+const CarritoElementos = () => {
+  const { cart, setCart } = useContext(dataContext);
+
+  const eliminarProducto = (id) => {
+    const BuscarId = cart.find((elemento) => elemento.id === id);
+
+    const NuevoCarrito = cart.filter((elemento) => {
+      return elemento !== BuscarId;
+    });
+
+    setCart(NuevoCarrito);
+  };
+
+  return cart.map((Productos) => {
+    return (
+      <div className="row border-top border-bottom" key={Productos.id}>
+        <div className="row main align-items-center">
+          <div className="col-2">
+            <img
+              className="img-fluid"
+              src={Productos.img}
+              alt="img-productos-card"
+            />
+          </div>
+          <div className="col">
+            
+            <div className="row">{Productos.caracteristicas}</div>
+          </div>
+          <div className="col">
+            <CarritoContador
+              Productos={Productos}
+              cantidad={Productos.cantidad}
+            />
+          </div>
+          <div className="col">
+            ${Productos.precio * Productos.cantidad}
+            <h3 className="close" onClick={() => eliminarProducto(Productos.id)}>
+              ❌
+            </h3>
+          </div>
+        </div>
+      </div>
+    );
+  });
+};
+
+export default CarritoElementos;
+
+CarritoContador.jsx:
+
+import { useContext } from "react";
+import { dataContext } from "../Context/DataContext";
+
+const CarritoContador = ({ Productos, cantidad }) => {
+    const { cart, setCart, comprarProductos } = useContext(dataContext);
+
+    const restar = () => {
+        const productotrepeat = cart.find((item) => item.id === Productos.id);
+
+        productotrepeat.cantidad !== 1 &&
+            setCart(cart.map((item) => (item.id === Productos.id ? { ...Productos, cantidad: productotrepeat.cantidad - 1 } : item)));
+
+    };
+
+    return (
+        <>
+            <p className='boton-contador' onClick={() => restar(Productos)}>-</p>
+            <p>{cantidad}</p>
+            <p className='boton-contador' onClick={() => comprarProductos(Productos)}>+</p>
+        </>
+    )
+}
+
+export default CarritoContador
+
+
+
+CarritoTotal.jsx:
+
+import React, { useContext } from 'react'
+import { dataContext } from '../Context/DataContext'
+
+const CarritoTotal = () => {
+    const { cart } = useContext(dataContext);
+
+    const total = cart.reduce((acc, el) => acc + el.precio * el.cantidad, 0);
+  return (
+    <div className='CarritoTotal'>
+      <h3>${total}</h3>
+    </div>
+  );
+};
+
+export default CarritoTotal
+
+
+ademas tengo un codigo con el cual podemos seguir su estructura manteniendo mis variables y funciones 
+
+import React, { useState, useEffect } from 'react';
+import NavBar from '../../components/navbar/navbar.jsx';
+import Footer from '../../components/footer/footer.jsx';
+import './cart.css';
+import axios from 'axios';
+
+export default function Cart() {
+    const [cartItems, setCartItems] = useState([]);
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/products');
+                setData(response.data);
+            } catch (error) {
+                console.error('Error interno del servidor:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const addToCart = (product) => {
+        if (cartItems[product.id]) {
+            const updatedCart = { ...cartItems };
+            updatedCart[product.id].quantity += 1;
+            setCartItems(updatedCart);
+        } else {
+            setCartItems({
+            ...cartItems,
+            [product.id]: { ...product, quantity: 1 },
+            });
+        }
+    };
+
+    const removeFromCart = (productId) => {
+        const updatedCart = { ...cartItems };
+
+        if (updatedCart[productId]) {
+            if (updatedCart[productId].quantity > 1) {
+                updatedCart[productId].quantity -= 1;
+            } else {
+                delete updatedCart[productId];
+            }
+
+            setCartItems(updatedCart);
+        }
+    };
+
+    const filteredCart = Object.values(cartItems).map(({ id, quantity }) => ({ id, quantity }));
+
+    const jsonifiedCart = JSON.stringify(filteredCart);
+
+    const handleCart = async () => {
+        if (jsonifiedCart !== "[]") {
+            try {
+                await axios.post('http://localhost:8080/cart', {jsonifiedCart});
+    
+                alert('Articulos comprados con exito');
+            } catch (err) {
+                alert('Error al realizar la compra');
+                console.log("Error al registrar carrito: ", err)
+            }    
+        } else {
+            alert('Seleccionar articulos antes de realizar la compra');
+        }
+    };
+
+    return (
+        <div className="Cart">
+            <NavBar />
+            <div className="discover">
+                <div className="products">
+                    <ul>
+                        <h1>Categoria 1</h1>
+                        <div className="items">
+                            {data.map(producto => (
+                                <li className="item_style" key={producto.id}>
+                                    <img src={producto.image} alt={producto.nombre} />
+                                    <h3><b>{producto.nombre}</b> - {producto.precio}</h3>
+                                    <p>{producto.desc}</p>
+                                    <button className="mainBtn" onClick={() => addToCart(producto)}>Añadir</button>
+                                </li>
+                            ))}
+                        </div>
+                    </ul>
+                </div>
+                <div className="cart">
+                    <h1>Carrito</h1>
+                    <hr />
+                    <div className="pushed">
+                        {Object.values(cartItems).map((item) => (
+                            <div className="item_style" key={item.id}>
+                                <img src={item.image} alt={item.nombre} />
+                                <h3>
+                                {item.nombre} - {Number((item.precio * item.quantity)).toFixed(1)}
+                                </h3>
+                                <p>Cantidad: {item.quantity}</p>
+                                <button className="mainBtn" onClick={() => removeFromCart(item.id)}>
+                                Quitar
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                    <button className="mainBtn" onClick={handleCart}>Comprar</button>
+                </div>
+            </div>
+            <Footer />
+        </div>
+    );
+}

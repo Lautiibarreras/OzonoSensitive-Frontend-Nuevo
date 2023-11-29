@@ -74,13 +74,13 @@ function App() {
           </Routes>
         </BrowserRouter>
 
-        {isAuthenticated ? (
+        {/* {isAuthenticated ? (
           <LogOutBoton></LogOutBoton>
         ) : (
           <LoginBoton></LoginBoton>
         )}
 
-        <Perfil></Perfil>
+        <Perfil></Perfil> */}
       </DataProvider>
     </div>
   );

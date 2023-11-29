@@ -1,10 +1,49 @@
-import "./carrito.css";
+import React, { useContext, useState, useEffect } from "react";
+import { dataContext } from "../Context/DataContext";
 import CarritoElementos from "./CarritoElementos";
 import CarritoTotal from "./CarritoTotal";
-import "./carrito.css";
-
+import axios from "axios";
 
 export default function Carrito() {
+  const { cart, setCart } = useContext(dataContext);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    const newTotal = cart.reduce(
+      (acc, el) => acc + el.details.precio * el.cantidad,
+      0
+    );
+    setTotal(newTotal);
+  }, [cart]);
+
+  const eliminarProducto = (id) => {
+    const NuevoCarrito = cart.filter((elemento) => {
+      return elemento.id !== id;
+    });
+
+    setCart(NuevoCarrito);
+  };
+
+  const handleCompra = async () => {
+    const productIds = cart.map((item) => item.id);
+    const cartDetails = cart.map((item) => ({
+      id: item.id,
+      cantidad: item.cantidad,
+    }));
+
+    try {
+      // Cambiar la URL de la siguiente línea según la ruta de tu backend
+      await axios.post("http://localhost:8080/carrito", {
+        productIds,
+        cartDetails,
+      });
+      alert("Articulos comprados con éxito");
+    } catch (err) {
+      alert("Error al realizar la compra");
+      console.log("Error al registrar carrito: ", err);
+    }
+  };
+
   return (
     <section>
       <div className="card">
@@ -37,28 +76,32 @@ export default function Carrito() {
               </h5>
             </div>
             <div className="row">
-              <div className="col" style={{ "padding-left": "0;" }}>
+              <div className="col" style={{ paddingLeft: "0;" }}>
                 Total de los productos
               </div>
-              <div className="col text-right"><CarritoTotal /></div>
+              <div className="col text-right">
+                <CarritoTotal total={total} />
+              </div>
             </div>
             <form>
-              <p>ENVIO</p>
+              <p>ENVÍO</p>
               <select>
-                <option className="text-muted">Envio normal- $ 5.00</option>
+                <option className="text-muted">Envío normal- $ 5.00</option>
               </select>
             </form>
             <div
               className="row"
               style={{
-                "border-top": "1px solid rgba(0,0,0,.1);",
-                padding: "2vh 0;",
+                borderTop: "1px solid rgba(0,0,0,.1)",
+                padding: "2vh 0",
               }}
             >
               <div className="col">TOTAL</div>
               <div className="col text-right"></div>
             </div>
-            <button className="btn">CONFIRMAR</button>
+            <button className="btn" onClick={handleCompra}>
+              CONFIRMAR
+            </button>
           </div>
         </div>
       </div>

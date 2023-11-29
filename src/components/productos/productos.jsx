@@ -1,24 +1,37 @@
-import "./productos.css";
-import { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { dataContext } from "../Context/DataContext";
+import "./productos.css";
 
 const Productos = () => {
-  const { data, cart, setCart, comprarProductos } = useContext(dataContext);
+  const { comprarProductos } = useContext(dataContext);
+  const [productos, setProductos] = useState([]);
 
-    return data.map((Productos) => {
-      return (
-        <div className="containerProductos" key={Productos.id}>
-          <img
-            className="img-productos"
-            src={Productos.img}
-            alt="img-productos-card"
-          />
-          <p className="product-grid__name">{Productos.nombre}</p>
-          <p className="product-grid__price">${Productos.precio}</p>
-          <button onClick={() => comprarProductos(Productos)}>Comprar</button>
+  useEffect(() => {
+    const fetchProductos = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/productos");
+        const data = await response.json();
+        setProductos(data);
+      } catch (error) {
+        console.error("Error al obtener productos:", error);
+      }
+    };
+
+    fetchProductos();
+  }, []);
+
+  return (
+    <div className="pruductos">
+      {productos.map(producto => (
+        <div className="containerProductos" key={producto.id}>
+          <img className="img-productos" src={producto.img}/>
+          <p className="product-grid__name">{producto.nombre}</p>
+          <p className="product-grid__price">${producto.precio}</p>
+          <button onClick={() => comprarProductos(producto)}>Comprar</button>
         </div>
-      );
-    });
-  };
+      ))}
+    </div>
+  );
+};
 
-  export default Productos;
+export default Productos;

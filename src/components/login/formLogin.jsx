@@ -29,7 +29,7 @@ const FormLogin = () => {
   return (
     <div className="container">
       <div className="wrapper">
-        <div className="title"><span>Login Form</span></div>
+        <div className="title"><span>Login</span></div>
         <form action="#">
           <div className="row">
             <i className="fas fa-user"></i>
@@ -38,13 +38,12 @@ const FormLogin = () => {
           <div className="row">
             <i className="fas fa-lock"></i>
             <input type="text" name="password" value={password} onChange={(e) => setPassword(e.target.value)} id="password" placeholder="Contraseña" required />          </div>
-          <div className="pass"><a href="#">Forgot password?</a></div>
           <div className="row button">
             <button type="submit" onClick={handleRegister}>Ingresar</button>
           </div>
-          <div className="signup-link">Not a member? 
+          <div className="signup-link">No tienes cuenta aun? 
             <Link to="/FormRegister">
-                <button className="SignupNow">Signup now</button> 
+                <button className="SignupNow">Resgistrate ahora</button> 
             </Link>
             </div>
         </form>

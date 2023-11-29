@@ -23,14 +23,14 @@ const FormRegister = () => {
         e.preventDefault();
     
         if (formData.password !== formData.password2) {
-          alert("Las contrasenas deben ser coincidentes");
+          alert("Las contrasenas deben ser iguales");
         } else {
           try {
             await axios.post('http://localhost:8080/register', {
               formData
             });
       
-            alert("Usuario registrado exitosamente");
+            alert("Usuario registrado");
           } catch (error) {
             alert("Error al registrar al usuario");
             console.log("Error al registrar el usuario: ", error);
@@ -49,7 +49,7 @@ const FormRegister = () => {
   return (
     <div className="container">
       <div className="wrapper">
-        <div className="title"><span>Signup Form</span></div>
+        <div className="title"><span>Signup</span></div>
         <form action="#">
         <div className="row">
             <i className="fas fa-user"></i>
