@@ -1,9 +1,9 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
+import { Link } from "react-router-dom";
 import "./NavBar.css";
 import LogoMenu from "../../img/LogoMenu.png";
 import LogoSinNombreSinFondo from "../../img/LogoSinNombreSinFondo.png";
-import { Link } from "react-router-dom";
-
+import SearchAppBar from "./SearchAppBar"; // Import the SearchAppBar component
 
 function NavBar() {
   const navRef = useRef();
@@ -11,8 +11,6 @@ function NavBar() {
   const showNavBar = () => {
     navRef.current.classList.toggle("responsive_nav");
   };
-
-
 
   return (
     <header>
@@ -26,6 +24,7 @@ function NavBar() {
         </Link>
         <a>Ubicacion</a>
         <a>Contacto</a>
+        
 
         <Link to="/carrito">
           <span className="material-symbols-outlined">shopping_cart</span>
@@ -34,13 +33,16 @@ function NavBar() {
           <span className="material-symbols-outlined">account_circle</span>
         </Link>
 
+
         <button className="nav-btn nav-close-btn" onClick={showNavBar}>
           <img src={LogoMenu} alt="" />
         </button>
       </nav>
+      
       <button className="nav-btn" onClick={showNavBar}>
         X
       </button>
+      <SearchAppBar />
     </header>
   );
 }
