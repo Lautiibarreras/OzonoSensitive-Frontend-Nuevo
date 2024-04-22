@@ -5,10 +5,10 @@
 }
 
 :root {
-  --mainColor: #053B50;
-  --mainColorLight: #64CCC5;
-  --secondaryColor: #176B87;
-  --textColor: #EEEEEE;
+  --mainColor: #053b50;
+  --mainColorLight: #64ccc5;
+  --secondaryColor: #176b87;
+  --textColor: #eeeeee;
 }
 
 header {

@@ -2,8 +2,7 @@ import * as React from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
+import * as tf from '@tensorflow/tfjs';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -43,30 +42,150 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         width: '20ch',
       },
     },
+    onKeyUp: handleAutoComplete, // Agregar el evento onKeyUp
   },
 }));
 
-const top100Films = [
-  // ... (tus datos aquí)
-];
+const ALPHA_LEN = 26;
+const sample_len = 1;
+const batch_size = 32;
+const epochs = 250;
+const max_len = 10;
+let words = [];
+let model;
+
+async function loadDataset() {
+  const response = await fetch('dataset.txt');
+  const text = await response.text();
+  words = text.split(/\s+/); // Dividir por espacios en blanco
+}
+
+async function loadModel() {
+  model = await tf.loadLayersModel('autocorrect_model/model.json');
+}
+
+loadDataset().then(loadModel);
 
 export default function SearchWithAutocomplete() {
+  const [searchTerm, setSearchTerm] = React.useState('');
+
+  const handleSearch = (e) => {
+    if (e.key === 'Enter') {
+      // Realizar la búsqueda con searchTerm
+      console.log('Búsqueda:', searchTerm);
+    }
+  };
+
+  const handleAutoComplete = async (e) => {
+    const inputValue = e.target.value;
+    const autoCompletedValue = await getAutoCompletedValue(inputValue);
+    setSearchTerm(autoCompletedValue);
+  };
+
+  async function getAutoCompletedValue(inputValue) {
+    if (!model) {
+      return inputValue;
+    }
+
+    const pred_features = preprocessing_stage_2([inputValue], max_len);
+    const pred_features_tensor = preprocessing_stage_5(pred_features, max_len, ALPHA_LEN);
+    const pred_labels = model.predict(pred_features_tensor);
+    const pred_labels_array = postprocessing_stage_1(pred_labels);
+    const autoCompletedValue = postprocessing_stage_2(pred_labels_array, max_len)[0].join('');
+
+    return autoCompletedValue;
+  }
+
+  function preprocessing_stage_1(words, max_len) {
+    let filtered_words = [];
+    const pattern = new RegExp(`^[a-z]{1,${max_len}}$`);
+    for (let i in words) {
+      const is_valid = pattern.test(words[i]);
+      if (is_valid) filtered_words.push(words[i]);
+    }
+    return filtered_words;
+  }
+
+  function preprocessing_stage_2(words, max_len) {
+    let int_words = [];
+    for (let i in words) {
+      int_words.push(word_to_int(words[i], max_len));
+    }
+    return int_words;
+  }
+
+  function preprocessing_stage_3(words, max_len, sample_len) {
+    let input_data = [];
+    for (let x in words) {
+      for (let y = sample_len + 1; y < max_len + 1; y++) {
+        input_data.push(words[x].slice(0, y).concat(Array(max_len - y).fill(0)));
+      }
+    }
+    return input_data;
+  }
+
+  function preprocessing_stage_4(words, max_len, sample_len) {
+    let output_data = [];
+    for (let x in words) {
+      for (let y = sample_len + 1; y < max_len + 1; y++) {
+        output_data.push(words[x]);
+      }
+    }
+    return output_data;
+  }
+
+  function preprocessing_stage_5(words, max_len, alpha_len) {
+    return tf.oneHot(tf.tensor2d(words, [words.length, max_len], 'int32'), alpha_len);
+  }
+
+  function postprocessing_stage_1(words) {
+    return words.argMax(-1).arraySync();
+  }
+
+  function postprocessing_stage_2(words, max_len) {
+    let results = [];
+    for (let i in words) {
+      results.push(int_to_word(words[i], max_len));
+    }
+    return results;
+  }
+
+  function word_to_int(word, max_len) {
+    let encode = [];
+    for (let i = 0; i < max_len; i++) {
+      if (i < word.length) {
+        let letter = word.slice(i, i + 1);
+        encode.push(letter.charCodeAt(0) - 96);
+      } else {
+        encode.push(0);
+      }
+    }
+    return encode;
+  }
+
+  function int_to_word(word, max_len) {
+    let decode = [];
+    for (let i = 0; i < max_len; i++) {
+      if (word[i] === 0) {
+        decode.push('');
+      } else {
+        decode.push(String.fromCharCode(word[i] + 96));
+      }
+    }
+    return decode;
+  }
+
   return (
     <Search>
       <SearchIconWrapper>
         <SearchIcon />
       </SearchIconWrapper>
       <StyledInputBase
-        placeholder="Search…"
+        placeholder="Search..."
         inputProps={{ 'aria-label': 'search' }}
-      />
-      <Autocomplete
-        id="grouped-demo"
-        options={top100Films.sort((a, b) => -b.firstLetter.localeCompare(a.firstLetter))}
-        groupBy={(option) => option.firstLetter}
-        getOptionLabel={(option) => option.title}
-        sx={{ width: 300 }}
-        renderInput={(params) => <TextField {...params} label="With categories" />}
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        onKeyDown={handleSearch}
       />
     </Search>
   );
