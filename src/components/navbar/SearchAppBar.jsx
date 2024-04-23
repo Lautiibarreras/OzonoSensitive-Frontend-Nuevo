@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
-import InputBase from '@mui/material/InputBase';
-import SearchIcon from '@mui/icons-material/Search';
-import * as tf from '@tensorflow/tfjs';
+import { styled, alpha } from '@mui/material/styles'; // Importar estilos y funciones de estilo desde Material-UI
+import InputBase from '@mui/material/InputBase'; // Componente de entrada de Material-UI
+import SearchIcon from '@mui/icons-material/Search'; // Icono de búsqueda de Material-UI
+import * as tf from '@tensorflow/tfjs'; // Importar TensorFlow.js
 
+// Definir estilos para el contenedor de búsqueda
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -19,6 +20,7 @@ const Search = styled('div')(({ theme }) => ({
   },
 }));
 
+// Definir estilos para el icono de búsqueda
 const SearchIconWrapper = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 2),
   height: '100%',
@@ -29,6 +31,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   justifyContent: 'center',
 }));
 
+// Definir estilos para el componente de entrada de búsqueda
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: 'inherit',
   width: '100%',
@@ -42,60 +45,74 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         width: '20ch',
       },
     },
-    onKeyUp: handleAutoComplete, // Agregar el evento onKeyUp
   },
 }));
 
+// Constantes para parámetros del modelo de autocorrección
 const ALPHA_LEN = 26;
 const sample_len = 1;
 const batch_size = 32;
 const epochs = 250;
 const max_len = 10;
-let words = [];
-let model;
+let words = []; // Arreglo para almacenar las palabras del dataset
+let model; // Variable para almacenar el modelo
 
+// Función asincrónica para cargar el dataset
 async function loadDataset() {
-  const response = await fetch('dataset.txt');
-  const text = await response.text();
-  words = text.split(/\s+/); // Dividir por espacios en blanco
+  const response = await fetch('dataset.txt'); // Realizar una solicitud para cargar el dataset
+  const text = await response.text(); // Obtener el texto de la respuesta
+  words = text.split(/\s+/); // Dividir el texto en palabras utilizando espacios en blanco como delimitador
+  console.log('Dataset cargado:', words.length, 'palabras'); // Imprimir el número de palabras cargadas en la consola
 }
 
+// Función asincrónica para cargar el modelo
 async function loadModel() {
-  model = await tf.loadLayersModel('autocorrect_model/model.json');
+  try {
+    model = await tf.loadLayersModel('./autocorrect_model/model.json'); // Cargar el modelo desde el archivo JSON
+    console.log('Modelo cargado exitosamente'); // Imprimir mensaje de éxito en la consola
+  } catch (error) {
+    console.error('Error al cargar el modelo:', error); // Imprimir mensaje de error en la consola
+  }
 }
 
-loadDataset().then(loadModel);
+loadDataset().then(loadModel); // Cargar el dataset y luego el modelo
 
+// Componente funcional SearchWithAutocomplete
 export default function SearchWithAutocomplete() {
-  const [searchTerm, setSearchTerm] = React.useState('');
+  const [searchTerm, setSearchTerm] = React.useState(''); // Estado para el término de búsqueda
 
+  // Manejador de evento para la tecla Enter
   const handleSearch = (e) => {
     if (e.key === 'Enter') {
-      // Realizar la búsqueda con searchTerm
+      // Realizar la búsqueda con el término de búsqueda
       console.log('Búsqueda:', searchTerm);
     }
   };
 
+  // Manejador de evento para el autocompletado
   const handleAutoComplete = async (e) => {
-    const inputValue = e.target.value;
-    const autoCompletedValue = await getAutoCompletedValue(inputValue);
-    setSearchTerm(autoCompletedValue);
+    const inputValue = e.target.value; // Obtener el valor de entrada
+    const autoCompletedValue = await getAutoCompletedValue(inputValue); // Obtener el valor autocompletado
+    setSearchTerm(autoCompletedValue); // Establecer el término de búsqueda con el valor autocompletado
   };
 
+  // Función asincrónica para obtener el valor autocompletado
   async function getAutoCompletedValue(inputValue) {
     if (!model) {
-      return inputValue;
+      console.warn('El modelo no está cargado'); // Imprimir advertencia en la consola si el modelo no está cargado
+      return inputValue; // Devolver el valor de entrada si el modelo no está cargado
     }
-
-    const pred_features = preprocessing_stage_2([inputValue], max_len);
-    const pred_features_tensor = preprocessing_stage_5(pred_features, max_len, ALPHA_LEN);
-    const pred_labels = model.predict(pred_features_tensor);
-    const pred_labels_array = postprocessing_stage_1(pred_labels);
-    const autoCompletedValue = postprocessing_stage_2(pred_labels_array, max_len)[0].join('');
-
-    return autoCompletedValue;
+  
+    const pred_features = preprocessing_stage_2([inputValue], max_len); // Obtener características predichas
+    const pred_features_tensor = preprocessing_stage_5(pred_features, max_len, ALPHA_LEN); // Convertir a tensor
+    const pred_labels = model.predict(pred_features_tensor); // Realizar predicción con el modelo
+    const pred_labels_array = postprocessing_stage_1(pred_labels); // Convertir predicciones a arreglo
+    const autoCompletedValue = postprocessing_stage_2(pred_labels_array, max_len)[0].join(''); // Obtener valor autocompletado
+    console.log('Valor autocompletado:', autoCompletedValue); // Imprimir valor autocompletado en la consola
+    return autoCompletedValue; // Devolver valor autocompletado
   }
-
+  
+  // Función de preprocesamiento: Filtrar palabras válidas
   function preprocessing_stage_1(words, max_len) {
     let filtered_words = [];
     const pattern = new RegExp(`^[a-z]{1,${max_len}}$`);
@@ -106,6 +123,7 @@ export default function SearchWithAutocomplete() {
     return filtered_words;
   }
 
+  // Función de preprocesamiento: Convertir palabras a enteros
   function preprocessing_stage_2(words, max_len) {
     let int_words = [];
     for (let i in words) {
@@ -114,34 +132,19 @@ export default function SearchWithAutocomplete() {
     return int_words;
   }
 
-  function preprocessing_stage_3(words, max_len, sample_len) {
-    let input_data = [];
-    for (let x in words) {
-      for (let y = sample_len + 1; y < max_len + 1; y++) {
-        input_data.push(words[x].slice(0, y).concat(Array(max_len - y).fill(0)));
-      }
-    }
-    return input_data;
-  }
+  // Otras funciones de preprocesamiento, pero no se utilizan en el componente actualmente
 
-  function preprocessing_stage_4(words, max_len, sample_len) {
-    let output_data = [];
-    for (let x in words) {
-      for (let y = sample_len + 1; y < max_len + 1; y++) {
-        output_data.push(words[x]);
-      }
-    }
-    return output_data;
-  }
-
+  // Función de preprocesamiento: Convertir palabras a tensores one-hot
   function preprocessing_stage_5(words, max_len, alpha_len) {
     return tf.oneHot(tf.tensor2d(words, [words.length, max_len], 'int32'), alpha_len);
   }
 
+  // Función de postprocesamiento: Convertir predicciones a arreglo
   function postprocessing_stage_1(words) {
     return words.argMax(-1).arraySync();
   }
 
+  // Función de postprocesamiento: Convertir enteros a palabras
   function postprocessing_stage_2(words, max_len) {
     let results = [];
     for (let i in words) {
@@ -150,6 +153,7 @@ export default function SearchWithAutocomplete() {
     return results;
   }
 
+  // Función para convertir palabra a un arreglo de enteros
   function word_to_int(word, max_len) {
     let encode = [];
     for (let i = 0; i < max_len; i++) {
@@ -163,6 +167,7 @@ export default function SearchWithAutocomplete() {
     return encode;
   }
 
+  // Función para convertir enteros a palabra
   function int_to_word(word, max_len) {
     let decode = [];
     for (let i = 0; i < max_len; i++) {
@@ -175,6 +180,7 @@ export default function SearchWithAutocomplete() {
     return decode;
   }
 
+  // Renderizar el componente de búsqueda con autocompletado
   return (
     <Search>
       <SearchIconWrapper>
@@ -186,6 +192,7 @@ export default function SearchWithAutocomplete() {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         onKeyDown={handleSearch}
+        onKeyUp={handleAutoComplete} // Pasar handleAutoComplete como prop
       />
     </Search>
   );
