@@ -3,6 +3,7 @@ import { styled, alpha } from '@mui/material/styles'; // Importar estilos y func
 import InputBase from '@mui/material/InputBase'; // Componente de entrada de Material-UI
 import SearchIcon from '@mui/icons-material/Search'; // Icono de búsqueda de Material-UI
 import * as tf from '@tensorflow/tfjs'; // Importar TensorFlow.js
+import datasetText from './data/dataset.txt';
 
 // Definir estilos para el contenedor de búsqueda
 const Search = styled('div')(({ theme }) => ({
@@ -57,25 +58,37 @@ const max_len = 10;
 let words = []; // Arreglo para almacenar las palabras del dataset
 let model; // Variable para almacenar el modelo
 
-// Función asincrónica para cargar el dataset
-async function loadDataset() {
-  const response = await fetch('dataset.txt'); // Realizar una solicitud para cargar el dataset
-  const text = await response.text(); // Obtener el texto de la respuesta
-  words = text.split(/\s+/); // Dividir el texto en palabras utilizando espacios en blanco como delimitador
-  console.log('Dataset cargado:', words.length, 'palabras'); // Imprimir el número de palabras cargadas en la consola
-}
+//Función asincrónica para cargar el dataset
+const loadDataset = () => {
+  fetch(datasetText)
+    .then(response => response.text())
+    .then(text => {
+      words = text.split(",");
+      console.log('Dataset cargado:', words.length, 'palabras', words);
+    })
+    .catch(error => console.error('Error al cargar el dataset:', error));
+};
+
+
 
 // Función asincrónica para cargar el modelo
-async function loadModel() {
-  try {
-    model = await tf.loadLayersModel('./autocorrect_model/model.json'); // Cargar el modelo desde el archivo JSON
-    console.log('Modelo cargado exitosamente'); // Imprimir mensaje de éxito en la consola
-  } catch (error) {
-    console.error('Error al cargar el modelo:', error); // Imprimir mensaje de error en la consola
-  }
-}
+const loadModel = () => {
+  return fetch('http://localhost:3000/model.json')
+    .then(response => response.json())
+    .then(modelJSON => {
+      model = tf.loadLayersModel(tf.io.fromMemory(modelJSON));
+      console.log('Modelo cargado exitosamente'); // Imprimir mensaje de éxito en la consola
+    })
+    .catch(error => {
+      console.error('Error al cargar el modelo:', error); // Imprimir mensaje de error en la consola
+      throw error; // Rechazar la promesa con el error correspondiente
+    });
+};
 
-loadDataset().then(loadModel); // Cargar el dataset y luego el modelo
+
+loadDataset(); // Cargar el dataset y luego el modelo
+
+loadModel();
 
 // Componente funcional SearchWithAutocomplete
 export default function SearchWithAutocomplete() {
